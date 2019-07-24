@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Hip Hop</title>
+</head>
+
+<body>
+
+  <input id="searchtext" type="text" placeholder="Search.."> 
+  <button id="searchgifs" type="submit">search</button>
+  <div id="btndiv"></div>
+  <div class="inner"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  
+
+  var topics = ["rap", "hiphop", "style", "graffiti"];
+
+  function searchGifs( search ){
+      console.log( " .. searching: "+ search );
+
+      //var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+      //topics[i] + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
+      var queryURL = `https://api.giphy.com/v1/gifs/search?q=${search}&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10`;
+          $.ajax({
+              url: queryURL,
+              method: "GET"
+          }).then(function(response) {
+              console.log(response);
+
+              var results = response.data;
+
+              // clear prior images
+              $(".inner").empty();
+
+              for (var i = 0; i < results.length; i++) { 
+                
+                $(".inner").prepend(
+                      `<img src=${results[i].images.fixed_height_still.url} data-still=${results[i].images.fixed_height_still.url} data-animate=${results[i].images.fixed_height.url} data-state="still" class="gif">`
+
+                  );
+              }
+          });
+  }
+    
+      for (var i = 0; i < topics.length; i++) {
+        $("#btndiv").append(`<button id='${topics[i]}'>${topics[i]}</button>`);
+      }
+
+      // bind to buttons and search for their topic id
+      $('BUTTON').on('click', function(){
+          var search = $(this).attr('id');
+
+          searchGifs( search );
+      });
+
+      $("#searchgifs").on("click", function(event){
+        event.preventDefault();
+    
+        var search = $("#searchtext").val().trim();
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        search + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
+    
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function(response) {
+            console.log(response);
+
+            var results = response.data;
+            
+            for (var i = 0; i < results.length; i++) {
+                $(".inner").prepend(
+                  `<img src=${results[i].images.original.url}>`
+                );
+
+                $.ajax({
+       url: queryURL,
+       method: "GET"
+     })
+       
+              }
+                
+            
+          
+          });
+      });
+      
+                  
+
+              $(".inner").on("click", '.gif', function() {
+          console.log("hello")
+              var state = $(this).attr("data-state");
+
+              if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+              } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+              }
+            });
+  </script>
+</body>
+
+</html>
